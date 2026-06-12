@@ -38,3 +38,7 @@ Stream B keys: 1, 2, 5
 #LEFT JOIN 
 <img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/6d71cb16-f1ed-41a6-91ed-da484aa01bf7" />
 
+#VERSIONED JOIN
+<img width="1692" height="930" alt="image" src="https://github.com/user-attachments/assets/1bf2040e-faad-4157-ba40-4cf50da31a83" />
+
+
