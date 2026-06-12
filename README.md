@@ -46,3 +46,9 @@ Stream B keys: 1, 2, 5
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/49632caa-65af-46af-8e55-640fa583f521" />
 
 
+#KTABLE AND GLOBALKTABLE INNER JOIN 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/9c0fbd40-d253-467c-9981-c0568c36f476" />
+
+
+#KTABLE AND GLOBALKTABLE LEFT JOIN 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/79e133f0-77ef-4118-ada7-ba97088bb392" />
