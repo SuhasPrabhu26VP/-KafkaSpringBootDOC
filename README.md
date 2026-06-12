@@ -5,7 +5,18 @@ Kafka Spring Boot Documentation
 
 #STATEFULLL PROCESSSING
 <img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/3ebc975a-b974-490c-b9fa-3468d1080961" />
+## Stateful vs Stateless Kafka Streams Topologies
 
+| Aspect | Stateful (`UserCompanyAggregationTopology`) | Stateless (`UserProcessingTopology`) |
+|----------|---------------------------------------------|--------------------------------------|
+| **State Stores** | Yes – RocksDB (`company-stats-store`) | No |
+| **Memory Usage** | Higher (stores per-key aggregates) | Minimal (no retained state) |
+| **Operations** | `groupByKey`, `aggregate` | `filter`, `branch` |
+| **Output Type** | `KTable` (changelog stream) | `KStream` (branched to multiple topics) |
+| **Use Case** | Compute rolling statistics per company | Route and filter events without aggregation |
+| **Exactly-Once Processing** | Requires state store recovery | Simpler, no recovery needed |
+| **Scalability** | Scales with number of keys (companies) | Scales with throughput (no state) |
+| **Example Output** | Company statistics (headcount, average salary, active/inactive counts) | Filtered users partitioned by country |
 
 #STREAM A TO STREAM B JOIN 
 
