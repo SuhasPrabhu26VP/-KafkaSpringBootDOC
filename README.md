@@ -22,3 +22,5 @@ Stream B keys: 1, 2, 5
 | Left      | 1, 2, 4     | All A keys. 4 has no match → right side = null. |
 | Outer     | 1, 2, 4, 5  | All keys from A and B. 4 → right null; 5 → left null. |.
 
+ASYMETRIC INNER JOIN 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/33b3d30b-19cf-4eb5-b72c-75d57f83c743" />
