@@ -42,3 +42,7 @@ Stream B keys: 1, 2, 5
 <img width="1692" height="930" alt="image" src="https://github.com/user-attachments/assets/1bf2040e-faad-4157-ba40-4cf50da31a83" />
 
 
+#FOREIGN KEY JOIN KTABLE TO KTABLE 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/49632caa-65af-46af-8e55-640fa583f521" />
+
+
