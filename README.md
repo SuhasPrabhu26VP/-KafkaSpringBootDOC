@@ -24,3 +24,7 @@ Stream B keys: 1, 2, 5
 
 ASYMETRIC INNER JOIN 
 <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/33b3d30b-19cf-4eb5-b72c-75d57f83c743" />
+
+
+WINDOWED INNER JOIN WITH GRACE 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/9038b30e-bb58-43ec-a6bb-aef872c31820" />
