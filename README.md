@@ -13,12 +13,12 @@ OUTER JOIN
 <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/798b2707-b173-408e-b25a-d8b5193b3fab" />
 
 Given:
-Stream A keys: 1, 2, 4
-Stream B keys: 1, 2, 5
-(all keys are within the time window)
-Join Type	Output keys	Explanation
-Inner	1, 2	Keys present in both A and B. 4 and 5 are dropped.
-Left	1, 2, 4	All A keys. 4 has no match → right side = null.
-Outer	1, 2, 4, 5	All keys from A and B. 4 → right null; 5 → left null.
+Stream A keys: 1, 2, 4  
+Stream B keys: 1, 2, 5  
 
-That’s it – no extra columns.
+| Join Type | Output keys | Explanation |
+|-----------|-------------|-------------|
+| Inner     | 1, 2        | Keys present in both A and B. 4 and 5 are dropped. |
+| Left      | 1, 2, 4     | All A keys. 4 has no match → right side = null. |
+| Outer     | 1, 2, 4, 5  | All keys from A and B. 4 → right null; 5 → left null. |.
+
