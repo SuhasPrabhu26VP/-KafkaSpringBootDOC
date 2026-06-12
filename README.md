@@ -1,5 +1,11 @@
 # KafkaSpringBootDOC
 Kafka Spring Boot Documentation
+#STATELESS PROCESSING 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/025f3274-be16-493f-bf6c-4c061180fab3" />
+
+#STATEFULLL PROCESSSING
+<img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/3ebc975a-b974-490c-b9fa-3468d1080961" />
+
 
 #STREAM A TO STREAM B JOIN 
 
