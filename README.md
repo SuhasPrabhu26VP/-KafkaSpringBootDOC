@@ -208,46 +208,6 @@ userStream
 
 ---
 
-```mermaid
-flowchart LR
-    subgraph KStream[🔵 KStream – Event Log]
-        direction TB
-        KS1[("Source Topic<br>(append‑only)")]
-        KS2[KStream<br>Stateless]
-        KS3[Filter / Map / Branch]
-        KS4[("Output Topic")]
-        KS1 --> KS2 --> KS3 --> KS4
-        KS5[<b>Technical Details</b><br>✅ Scales with partitions<br>✅ No state = low memory<br>❌ No fault‑tolerance for results<br>❌ Joins require co‑partitioning<br>❌ Tombstones pass through]
-        KS5 -.-> KS2
-    end
-
-    subgraph KTable[🟢 KTable – Changelog]
-        direction TB
-        KT1[("Changelog Topic<br>(upsert)")]
-        KT2[KTable<br>Stateful]
-        KT3[State Store<br>RocksDB]
-        KT4[Latest value per key]
-        KT5[("Output Topic")]
-        KT1 --> KT2 --> KT3 --> KT4 --> KT5
-        KT6[<b>Technical Details</b><br>✅ Scales with partitions<br>✅ Fault‑tolerant (changelog replay)<br>❌ Joins require co‑partitioning<br>❌ filter/mapValues skip tombstones<br>❌ Startup replays state]
-        KT6 -.-> KT2
-    end
-
-    subgraph GlobalKTable[🔴 GlobalKTable – Broadcast]
-        direction TB
-        GT1[("Lookup Topic")]
-        GT2[GlobalKTable<br>Replicated]
-        GT3[Full copy<br>per instance]
-        GT4[Local lookup<br>by any key]
-        GT5[("Local Output")]
-        GT1 --> GT2 --> GT3 --> GT4 --> GT5
-        GT6[<b>Technical Details</b><br>✅ NO co‑partition required<br>✅ Fast local lookups<br>❌ Memory = N × table_size<br>❌ Does NOT scale horizontally<br>❌ Slow startup (loads all data)<br>❌ Cannot re‑key – use mapper]
-        GT6 -.-> GT2
-    end
-
-    Decision[<b>🎯 Decision Rule</b><br>“Did it happen?” → KStream<br>“What is it now?” → KTable<br>“Small lookup & skip partition?” → GlobalKTable]
-    KStream ~~~ Decision ~~~ KTable ~~~ Decision ~~~ GlobalKTable
-```
 
 ## Key Rules to Remember
 
