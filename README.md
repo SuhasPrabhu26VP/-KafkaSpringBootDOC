@@ -69,3 +69,157 @@ Stream B keys: 1, 2, 5
 
 #KTABLE AND GLOBALKTABLE LEFT JOIN 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/79e133f0-77ef-4118-ada7-ba97088bb392" />
+
+
+# Kafka Streams: KStream vs KTable vs GlobalKTable
+
+> A practical comparison for building stream processing topologies with Kafka Streams.
+
+---
+
+## Overview
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Mental Model** | Append-only event log | Changelog — latest value per key wins | Fully replicated lookup table on every instance |
+| **Data Semantics** | Each record is an independent fact — same key = multiple distinct events | Each record is an upsert — same key = update, latest value wins | Same as KTable but fully replicated across all instances |
+| **Best For** | Events: clicks, payments, sensor readings, transactions, logs | Entity/reference data: user profiles, account balances, product prices | Small lookup tables: currency codes, country names, feature flags |
+| **When To Use** | *"Did it happen?"* — event-shaped data | *"What is it now?"* — current state | Only when lookup table is small and you want to skip co-partitioning |
+
+---
+
+## Join Behaviour
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Join With** | KTable, GlobalKTable, another KStream | KStream, another KTable | KStream only |
+| **Co-partitioning Required** | Yes — when joining with KTable | Yes — when joining with KStream | ❌ No — main advantage over KTable |
+| **Windowed Joins** | ✅ Yes — requires `JoinWindows` | ❌ No — stateless point-in-time lookup | ❌ No — always point-in-time lookup |
+| **Key Flexibility** | Must rekey before join if keys differ | Must rekey before join if keys differ | `KeyValueMapper` at join time acts as rekey — no repartition needed |
+| **Join Semantics** | Inner, Left, Outer | Inner, Left | Inner, Left |
+
+---
+
+## State & Storage
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Stateful?** | ❌ Stateless (unless aggregating/windowing) | ✅ Stateful — local state store per partition | ✅ Stateful — full copy on every instance |
+| **Memory/Storage** | Minimal | Proportional to partition data | High — entire table replicated to every instance |
+| **Scalability** | Scales with partitions | Scales with partitions | ❌ Does not scale — full copy regardless of instance count |
+| **State Store Type** | None (pure stream) | Local RocksDB per partition | Global RocksDB — loaded from all partitions |
+
+---
+
+## Fault Tolerance & Startup
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Fault Tolerance** | Stateless — no recovery needed | Replayed from internal changelog topic on crash | Replayed from source topic on crash |
+| **Startup Behaviour** | Immediate processing | Restores state store from changelog | ⚠️ Loads all partitions before processing starts — slower startup |
+| **Changelog Topic** | None | Auto-created internal changelog | Uses source topic directly |
+
+---
+
+## Tombstone (null value) Handling
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Null Value Behaviour** | Passes through as-is — treated as an event | Deletes key from state store | Same as KTable — deletes key from state store |
+| **Inner Join + Null** | Null passes through | Record suppressed — not forwarded downstream | Record suppressed — not forwarded downstream |
+| **Left/Outer Join + Null** | Null passes through | Null forwarded as right-side null | Null forwarded as right-side null |
+
+---
+
+## Re-keying
+
+| Feature | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **Can Re-key?** | ✅ Yes — `selectKey()` or `map()` | ✅ Yes — `.toStream().selectKey().toTable()` | ❌ No — but `KeyValueMapper` at join time provides key flexibility |
+| **Triggers Repartition?** | ✅ Yes — auto internal repartition topic created | ✅ Yes | ❌ No repartition needed |
+
+---
+
+## Quick Decision Guide
+
+```
+Is the data event-shaped (something happened)?
+└── YES → KStream
+
+Is the data entity-shaped (current state of something)?
+    ├── Is the dataset large (millions of rows)?
+    │   └── YES → KTable (partitioned, scalable)
+    │
+    └── Is the dataset small (thousands of rows)?
+        └── YES → GlobalKTable (no co-partitioning, simpler joins)
+```
+
+---
+
+## Join Compatibility Matrix
+
+| Left \ Right | KStream | KTable | GlobalKTable |
+|---|---|---|---|
+| **KStream** | ✅ Stream-Stream (windowed) | ✅ Stream-Table | ✅ Stream-GlobalTable |
+| **KTable** | ✅ Table-Stream | ✅ Table-Table | ❌ Not supported |
+| **GlobalKTable** | ❌ Not supported | ❌ Not supported | ❌ Not supported |
+
+---
+
+## Code Patterns
+
+### KStream — Event Processing
+```java
+KStream<String, AvroUser> userStream = builder
+        .stream("user-topic", Consumed.with(Serdes.String(), userSerde));
+```
+
+### KTable — Latest State Lookup
+```java
+KTable<String, AvroCompany> companyTable = builder
+        .table("company-topic",
+                Consumed.with(Serdes.String(), companySerde),
+                Materialized.as("store-company-lookup"));
+```
+
+### GlobalKTable — Replicated Lookup (No Co-partitioning)
+```java
+GlobalKTable<String, AvroCompany> globalCompany = builder
+        .globalTable("global-company-topic",
+                Consumed.with(Serdes.String(), companySerde),
+                Materialized.as("store-global-company"));
+```
+
+### Stream-Table Join (requires co-partitioning via selectKey)
+```java
+userStream
+        .selectKey((k, user) -> user.getCompanyId())   // rekey to match company key
+        .join(companyTable,
+              (user, company) -> user.getName() + " works at " + company.getName());
+```
+
+### Stream-GlobalTable Join (no co-partitioning needed)
+```java
+userStream
+        .join(globalCompany,
+              (userId, user) -> user.getCompanyId(),   // KeyValueMapper — lookup key
+              (user, company) -> user.getName() + " works at " + company.getName());
+```
+
+---
+
+## Key Rules to Remember
+
+- **Same topic cannot be registered as both KTable and GlobalKTable** in the same topology
+- **Same topic cannot be registered as both KStream and KTable** in the same topology
+- **Enable topology optimization** to merge duplicate KStream source registrations:
+  ```properties
+  spring.kafka.streams.properties.topology.optimization=all
+  ```
+- **GlobalKTable loads all data at startup** — keep it small or face slow restarts
+- **Co-partitioning** = same number of partitions + same partitioning strategy + same key type
+- **KTable FK join** handles key mismatch internally — no manual rekey needed:
+  ```java
+  userTable.join(companyTable, user -> user.getCompanyId(), ...)
+  ```
+
