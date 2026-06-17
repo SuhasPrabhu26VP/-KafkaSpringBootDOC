@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apache Kafka &amp; Kafka Streams — Spring Boot Documentation</title>
+<style>
+  :root {
+    --bg:        #ffffff;
+    --surface:   #f6f8fa;
+    --border:    #d0d7de;
+    --accent:    #e36209;
+    --accent2:   #0969da;
+    --green:     #1a7f37;
+    --red:       #cf222e;
+    --text:      #1f2328;
+    --muted:     #636c76;
+    --code-bg:   #f6f8fa;
+    --code-border:#d0d7de;
+    --tag-bg:    #eef1f4;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-body: 'Inter', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  nav .logo {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  nav .logo span { color: var(--text); }
+
+  .toc-toggle {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.78rem;
+    font-family: var(--font-body);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .toc-toggle:hover { background: var(--surface); }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; align-items: flex-start; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 52px;
+    align-self: flex-start;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.25rem 0 3rem 0;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    z-index: 50;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Force the inner nav to be a strict single column */
+  .sidebar nav.toc {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .toc-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+  .toc-group:last-child { margin-bottom: 0; }
+
+  /* Part heading */
+  .toc-part {
+    display: block;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 0.5rem 1rem 0.3rem;
+    margin-bottom: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .toc-part:hover { color: var(--text); }
+
+  /* Each nav item: num badge fixed-width + title on one line, never wraps */
+  .toc-group a:not(.toc-part) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.3rem 0.75rem 0.3rem 1rem;
+    border-left: 2px solid transparent;
+    transition: color 0.12s, background 0.12s, border-color 0.12s;
+    line-height: 1.5;
+  }
+  .toc-group a:not(.toc-part):hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+  .toc-group a.active {
+    color: var(--accent);
+    background: var(--tag-bg);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+  .toc-group a.active .toc-num { color: var(--accent); }
+
+  /* Fixed-width mono badge — C-01 … K-08 all same width, titles start at same x */
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 0.67rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 3.2rem;
+    display: inline-block;
+  }
+
+  .sidebar-backdrop { display: none; }
+
+  @media (max-width: 900px) {
+    .toc-toggle { display: inline-flex; }
+    .sidebar {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      z-index: 95;
+      background: var(--bg);
+      transform: translateX(-100%);
+      transition: transform 0.22s ease;
+      box-shadow: 4px 0 18px rgba(0,0,0,0.12);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-backdrop {
+      display: block;
+      position: fixed;
+      inset: 52px 0 0 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+  }
+
+  .page { flex: 1; min-width: 0; max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 4rem 0 3rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3rem;
+  }
+  .hero .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.05em;
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+    margin: 0 auto 2rem;
+  }
+  .hero .tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .hero .tags span {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ── SIMPLE CONTENTS LIST (top-of-part index) ── */
+  .toc-page {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    border-top: 1px solid var(--border);
+    margin-bottom: 3.5rem;
+  }
+  .toc-page a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.6rem 0.75rem;
+    text-decoration: none;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    transition: background 0.15s, color 0.15s;
+  }
+  .toc-page a:hover { background: var(--surface); color: var(--accent); }
+  .toc-page a .num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 70px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-header .tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ── SUBSECTION ── */
+  .subsection {
+    margin-bottom: 2.5rem;
+  }
+  .subsection h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    margin-bottom: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  /* ── DIAGRAM IMAGE ── */
+  .diagram {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    display: block;
+    background: var(--surface);
+  }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  thead tr { background: var(--surface); }
+  th {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbfc; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no  { color: var(--red);   font-weight: 600; }
+
+  /* ── CODE ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+  code { font-family: var(--font-mono); font-size: 0.82rem; }
+  p code, li code, td code {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    font-size: 0.78rem;
+    color: #953800;
+  }
+  .kw  { color: #cf222e; }
+  .cl  { color: #0550ae; }
+  .str { color: #0a3069; }
+  .cm  { color: #6e7781; font-style: italic; }
+  .fn  { color: #8250df; }
+  .nu  { color: #e36209; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: #fff8f0;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .callout strong { color: var(--text); }
+  .callout.blue  { background: #f0f6ff; border-color: var(--accent2); }
+  .callout.green { background: #f0fff4; border-color: var(--green); }
+  .callout.red   { background: #fff0f0; border-color: var(--red); }
+
+  /* ── JOIN CARDS ── */
+  .join-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .join-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .join-card h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+  }
+  .join-card h4 .badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    background: var(--tag-bg);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .join-card p { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── DECISION TREE ── */
+  .decision-tree {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    white-space: pre;
+  }
+  .decision-tree .q  { color: var(--text); }
+  .decision-tree .a  { color: var(--accent); }
+  .decision-tree .a2 { color: var(--accent2); }
+  .decision-tree .a3 { color: var(--green); }
+
+  /* ── RULES LIST ── */
+  .rules { list-style: none; }
+  .rules li {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    align-items: flex-start;
+  }
+  .rules li:last-child { border-bottom: none; }
+  .rules li .icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+  /* ── PART INTRO ── */
+  .part-intro { margin-bottom: 2.5rem; scroll-margin-top: 70px; }
+  .part-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+  .part-intro h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+  }
+  .part-intro p {
+    color: var(--muted);
+    max-width: 680px;
+    font-size: 0.95rem;
+  }
+  .part-divider {
+    border-top: 1px solid var(--border);
+    margin: 4.5rem 0 3rem;
+  }
+
+  .note {
+    font-size: 0.83rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .note em { color: var(--text); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">kafka<span>-docs</span></div>
+  <button class="toc-toggle" id="tocToggle" type="button" aria-label="Toggle contents">☰ Contents</button>
+</nav>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <nav class="toc">
+      <div class="toc-group">
+        <a href="#core-concepts" class="toc-part" data-target="core-concepts">Part 01 — Foundations</a>
+        <a href="#producer" data-target="producer"><span class="toc-num">C-01</span>Producer</a>
+        <a href="#consumer" data-target="consumer"><span class="toc-num">C-02</span>Consumer</a>
+        <a href="#topic" data-target="topic"><span class="toc-num">C-03</span>Topic</a>
+        <a href="#partition" data-target="partition"><span class="toc-num">C-04</span>Partition</a>
+        <a href="#offset" data-target="offset"><span class="toc-num">C-05</span>Offset</a>
+        <a href="#consumer-group" data-target="consumer-group"><span class="toc-num">C-06</span>Consumer Group</a>
+        <a href="#broker" data-target="broker"><span class="toc-num">C-07</span>Broker</a>
+        <a href="#cluster" data-target="cluster"><span class="toc-num">C-08</span>Cluster</a>
+        <a href="#leader-follower" data-target="leader-follower"><span class="toc-num">C-09</span>Leader &amp; Follower</a>
+        <a href="#isr" data-target="isr"><span class="toc-num">C-10</span>ISR</a>
+        <a href="#record-batch" data-target="record-batch"><span class="toc-num">C-11</span>Record Batch</a>
+        <a href="#retention-policy" data-target="retention-policy"><span class="toc-num">C-12</span>Retention Policy</a>
+        <a href="#consumer-rebalance" data-target="consumer-rebalance"><span class="toc-num">C-13</span>Consumer Rebalance</a>
+        <a href="#dlq" data-target="dlq"><span class="toc-num">C-14</span>DLQ</a>
+        <a href="#schema-registry" data-target="schema-registry"><span class="toc-num">C-15</span>Schema Registry</a>
+        <a href="#custom-partitioner" data-target="custom-partitioner"><span class="toc-num">C-16</span>Custom Partitioner</a>
+        <a href="#idempotent-producer" data-target="idempotent-producer"><span class="toc-num">C-17</span>Idempotent Producer</a>
+        <a href="#transactional-producer" data-target="transactional-producer"><span class="toc-num">C-18</span>Transactional Producer</a>
+      </div>
+      <div class="toc-group">
+        <a href="#kafka-streams" class="toc-part" data-target="kafka-streams">Part 02 — Stream Processing</a>
+        <a href="#stateless-vs-stateful" data-target="stateless-vs-stateful"><span class="toc-num">K-01</span>Stateless vs Stateful</a>
+        <a href="#stream-stream" data-target="stream-stream"><span class="toc-num">K-02</span>Stream-Stream Joins</a>
+        <a href="#stream-table" data-target="stream-table"><span class="toc-num">K-03</span>Stream-Table Joins</a>
+        <a href="#table-table" data-target="table-table"><span class="toc-num">K-04</span>Table-Table Joins</a>
+        <a href="#global-table" data-target="global-table"><span class="toc-num">K-05</span>GlobalKTable Joins</a>
+        <a href="#comparison" data-target="comparison"><span class="toc-num">K-06</span>Comparison</a>
+        <a href="#rules" data-target="rules"><span class="toc-num">K-07</span>Key Rules to Remember</a>
+        <a href="#getting-started" data-target="getting-started"><span class="toc-num">K-08</span>Getting Started</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge">Spring Boot · Apache Kafka · Kafka Streams · Avro · Schema Registry</div>
+    <h1>Apache Kafka<br/><span>Spring Boot Documentation</span></h1>
+    <p>A practical reference in two parts: the 18 core concepts every Kafka producer/consumer app is built on, followed by Kafka Streams topologies — joins, state stores, windowing, and serdes — using Spring Boot and Confluent Schema Registry.</p>
+    <div class="tags">
+      <span>18 core concepts</span>
+      <span>kafka-streams 4.1.2</span>
+      <span>spring-boot 4.0.6</span>
+      <span>spring-kafka 4.0.5</span>
+      <span>avro</span>
+      <span>confluent schema-registry</span>
+      <span>exactly-once-v2</span>
+    </div>
+  </div>
+
+  <!-- ── PART 01 INTRO ── -->
+  <div class="part-intro" id="core-concepts">
+    <div class="part-label">Part 01 — Foundations</div>
+    <h2>Core Kafka Concepts</h2>
+    <p>The 18 building blocks behind every Kafka producer and consumer app — topics, partitions, brokers, delivery guarantees, and the Spring Kafka configuration that wires them together. Examples throughout use a PayPal → SAP Commerce payment flow to keep things concrete.</p>
+  </div>
+
+  <!-- CORE CONCEPTS INDEX -->
+  <div class="toc-page">
+    <a href="#producer"><span class="num">C-01</span>Producer</a>
+    <a href="#consumer"><span class="num">C-02</span>Consumer</a>
+    <a href="#topic"><span class="num">C-03</span>Topic</a>
+    <a href="#partition"><span class="num">C-04</span>Partition</a>
+    <a href="#offset"><span class="num">C-05</span>Offset</a>
+    <a href="#consumer-group"><span class="num">C-06</span>Consumer Group</a>
+    <a href="#broker"><span class="num">C-07</span>Broker</a>
+    <a href="#cluster"><span class="num">C-08</span>Cluster</a>
+    <a href="#leader-follower"><span class="num">C-09</span>Leader &amp; Follower</a>
+    <a href="#isr"><span class="num">C-10</span>ISR</a>
+    <a href="#record-batch"><span class="num">C-11</span>Record Batch</a>
+    <a href="#retention-policy"><span class="num">C-12</span>Retention Policy</a>
+    <a href="#consumer-rebalance"><span class="num">C-13</span>Consumer Rebalance</a>
+    <a href="#dlq"><span class="num">C-14</span>Dead Letter Queue</a>
+    <a href="#schema-registry"><span class="num">C-15</span>Schema Registry</a>
+    <a href="#custom-partitioner"><span class="num">C-16</span>Custom Partitioner</a>
+    <a href="#idempotent-producer"><span class="num">C-17</span>Idempotent Producer</a>
+    <a href="#transactional-producer"><span class="num">C-18</span>Transactional Producer</a>
+  </div>
+
+    <div class="subsection" style="margin-top:-1.5rem;">
+    <img class="diagram" src="https://github.com/user-attachments/assets/5108d4ec-7932-4d70-8849-3c3304d481d1" alt="Kafka Architecture and Core Concepts Overview" />
+  </div>
+
+  <!-- ── C-01 PRODUCER ── -->
+  <section class="section" id="producer">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Producer</h2>
+      <span class="tag">C-01</span>
+    </div>
+
+    <div class="callout">
+      An application that publishes events to Kafka topics, sending records to specific topics with optional keys for partitioning.
+    </div>
+    <p class="note"><strong>Example —</strong> PayPal acts as producer: after collecting user credentials, it initiates the transaction and sends critical transaction details to SAP Commerce for later confirmation or reconciliation.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/d763769a-be1f-424a-82a0-d1dbdc04c702" alt="Producer publishing events to a topic" />
+
+    <div class="subsection">
+      <h3>// Producer Configuration</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>Explanation</th></tr></thead>
+          <tbody>
+            <tr><td><code>BOOTSTRAP_SERVERS_CONFIG</code></td><td>Tells the producer where to find your Kafka cluster brokers to establish the initial connection</td></tr>
+            <tr><td><code>ENABLE_IDEMPOTENCE_CONFIG</code></td><td>Ensures retries never create duplicate messages by assigning sequence numbers to each message (see <a href="#idempotent-producer">Idempotent Producer</a>)</td></tr>
+            <tr><td><code>ACKS_CONFIG</code></td><td>Controls how many broker replicas must confirm receipt before the producer considers the send successful</td></tr>
+            <tr><td><code>RETRIES_CONFIG</code></td><td>How many times the producer resends a message if the broker doesn't acknowledge it</td></tr>
+            <tr><td><code>MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION</code></td><td>How many unacknowledged messages can be in flight simultaneously per broker connection</td></tr>
+            <tr><td><code>KEY_SERIALIZER_CLASS_CONFIG</code></td><td>Converts your message key (like a <code>userId</code> string) into bytes so Kafka can transmit and partition it</td></tr>
+            <tr><td><code>VALUE_SERIALIZER_CLASS_CONFIG</code></td><td>Converts your message value (like an <code>AvroUser</code> object) into bytes so Kafka can transmit it</td></tr>
+            <tr><td><code>SCHEMA_REGISTRY_URL_CONFIG</code></td><td>Tells the producer where to fetch and register Avro schemas for serialization validation</td></tr>
+            <tr><td><code>VALUE_SUBJECT_NAME_STRATEGY</code></td><td>Determines what name Schema Registry uses to store your schema (record name vs. topic name)</td></tr>
+            <tr><td><code>PARTITIONER_CLASS_CONFIG</code></td><td>Custom logic that decides which partition number a message routes to based on key or value (see <a href="#custom-partitioner">Custom Partitioner</a>)</td></tr>
+            <tr><td><code>TRANSACTIONAL_ID_PREFIX</code></td><td>Enables exactly-once transactions by giving the producer a unique ID that survives restarts (see <a href="#transactional-producer">Transactional Producer</a>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// Factory &amp; Template</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Explanation</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ProducerFactory</strong></td><td>Creates actual <code>KafkaProducer</code> instances using all the config properties you defined</td></tr>
+            <tr><td><strong>KafkaTemplate</strong></td><td>Wrapper that provides a simple <code>send()</code> method and handles threading, callbacks, and transactions automatically</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── C-02 CONSUMER ── -->
+  <section class="section" id="consumer">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Consumer</h2>
+      <span class="tag">C-02</span>
+    </div>
+
+    <div class="callout">
+      An application that reads events from Kafka topics, processing records at its own pace with control over offset commits.
+    </div>
+    <p class="note"><strong>Example —</strong> the SAP Commerce Order Service consumes payment events: it reads the PayPal transaction details and updates order status without rushing or blocking the customer.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/02e456e1-a4c3-4b68-95ef-803eb64d488d" alt="Consumer reading events from a topic" />
+
+    <div class="subsection">
+      <h3>// Consumer Configuration Properties</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>BOOTSTRAP_SERVERS_CONFIG</code></td><td>Tells the consumer where to find your Kafka cluster brokers to start consuming messages</td></tr>
+            <tr><td><code>AUTO_OFFSET_RESET_CONFIG</code></td><td>Decides where to start reading when no committed offset exists for this consumer group — see values below</td></tr>
+            <tr><td><code>KEY_DESERIALIZER_CLASS_CONFIG</code></td><td>Converts message key bytes back into the original type (e.g. <code>String</code>) so the consumer can read it</td></tr>
+            <tr><td><code>VALUE_DESERIALIZER_CLASS_CONFIG</code></td><td>Converts message value bytes back into your domain object (e.g. via <code>KafkaAvroDeserializer</code>). In practice this is usually set to <code>ErrorHandlingDeserializer</code>, which wraps your real deserializer to handle bad messages gracefully — see below</td></tr>
+            <tr><td><code>ENABLE_AUTO_COMMIT_CONFIG</code></td><td>When <code>false</code>, you must manually call <code>ack.acknowledge()</code> to save your position in the partition</td></tr>
+            <tr><td><code>PARTITION_ASSIGNMENT_STRATEGY_CONFIG</code></td><td>Defines how partitions are distributed among consumers in the same group when a rebalance happens — see <a href="#consumer-group">Consumer Group</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// AUTO_OFFSET_RESET Values</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Value</th><th>What Happens</th></tr></thead>
+          <tbody>
+            <tr><td><code>"earliest"</code></td><td>New consumer starts from message 0 in each partition</td></tr>
+            <tr><td><code>"latest"</code></td><td>New consumer starts from the newest messages, skips all old messages</td></tr>
+            <tr><td><code>"none"</code></td><td>Consumer throws an exception if no committed offset exists</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// ErrorHandlingDeserializer</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>ErrorHandlingDeserializer.class</code></td><td>Wraps your real deserializer (like <code>KafkaAvroDeserializer</code>) and catches deserialization errors instead of letting them propagate</td></tr>
+            <tr><td>Without it</td><td>A single corrupted message crashes your entire consumer thread</td></tr>
+            <tr><td>With it</td><td>Failed deserialization is routed to your error handler → retry or DLQ, while the consumer keeps running</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// ConcurrentKafkaListenerContainerFactory</h3>
+      <p class="note">Creates containers that run multiple consumer threads in parallel to listen to Kafka partitions.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>factory.setConsumerFactory(...)</code></td><td>Tells the factory which consumer configuration to use (bootstrap servers, deserializers, group id)</td></tr>
+            <tr><td><code>factory.setCommonErrorHandler(errorHandler)</code></td><td>Attaches your retry and DLQ logic so failed messages are handled consistently across all listeners</td></tr>
+            <tr><td><code>factory.getContainerProperties().setAckMode(MANUAL)</code></td><td>You must call <code>ack.acknowledge()</code> in your code; Kafka won't auto-commit offsets</td></tr>
+            <tr><td><code>factory.setConcurrency(3)</code></td><td>Runs 3 consumer threads in parallel, each handling different partitions</td></tr>
+            <tr><td><code>factory.setRecordFilterStrategy(...)</code></td><td>Filters out records before they reach your <code>@KafkaListener</code> method</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── C-03 TOPIC ── -->
+  <section class="section" id="topic">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Topic</h2>
+      <span class="tag">C-03</span>
+    </div>
+
+    <div class="callout">
+      A logical category that organizes related events, similar to a database table or a folder in a filesystem.
+    </div>
+    <p class="note"><strong>Example —</strong> the <code>payment-transactions</code> topic stores every payment event from PayPal or other payment providers.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/e4aa9e6b-7e5d-4946-baf3-d0a993e0f3db" alt="Topic as a logical category of events" />
+    <img class="diagram" src="https://github.com/user-attachments/assets/a8a313f1-13b9-44f7-ab14-0e0b30efec6c" alt="Topic structure" />
+  </section>
+
+  <!-- ── C-04 PARTITION ── -->
+  <section class="section" id="partition">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Partition</h2>
+      <span class="tag">C-04</span>
+    </div>
+
+    <div class="callout">
+      A physically ordered, immutable sequence of events within a topic that enables parallel processing and horizontal scaling. A topic with 3 partitions can be processed by up to 3 consumers in parallel within a single consumer group.
+    </div>
+    <p class="note"><strong>Example —</strong> by default, Kafka assigns a record to a partition by hashing its key (<code>hash(key) % numPartitions</code>), so every payment for the same <code>userId</code> lands on the same partition and is processed in order. Records with no key are spread round-robin across partitions instead. Routing specific payment types to specific partitions on purpose is a <em>custom</em> strategy — see <a href="#custom-partitioner">Custom Partitioner</a>.</p>
+  </section>
+
+  <!-- ── C-05 OFFSET ── -->
+  <section class="section" id="offset">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Offset</h2>
+      <span class="tag">C-05</span>
+    </div>
+
+    <div class="callout">
+      A unique, sequential ID for each event within a partition that lets consumers track their reading position and resume from failures.
+    </div>
+    <p class="note"><strong>Example —</strong> offset 45 means SAP Commerce has successfully processed 45 PayPal transactions on that partition and will resume from transaction 46 after a restart or crash.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/699eff52-fc82-4c07-b4ba-431d6cfaab06" alt="Offsets within a partition" />
+    <img class="diagram" src="https://github.com/user-attachments/assets/cc14737f-da86-4ae0-9715-7ecc09bab6c5" alt="Consumer tracking offset position" />
+  </section>
+
+  <!-- ── C-06 CONSUMER GROUP ── -->
+  <section class="section" id="consumer-group">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Consumer Group</h2>
+      <span class="tag">C-06</span>
+    </div>
+
+    <div class="callout">
+      A set of consumers that work together to read from a topic, where each partition is assigned to exactly one consumer in the group at a time.
+    </div>
+    <p class="note"><strong>Example —</strong> three SAP Commerce payment processors form a consumer group reading a 3-partition topic; each instance is assigned a different partition, so every transaction is processed exactly once across the group, and no two instances fight over the same partition.</p>
+
+    <div class="subsection">
+      <h3>// Partition Assignment Strategies</h3>
+      <p class="note">Determines how the group leader hands out partitions to group members during a rebalance.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Strategy</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>RangeAssignor</code></td><td>Assigns consecutive partitions per topic to each consumer (Consumer1 gets 0,1; Consumer2 gets 2,3)</td></tr>
+            <tr><td><code>RoundRobinAssignor</code></td><td>Alternates partitions like dealing cards (Consumer1 gets 0,2; Consumer2 gets 1,3)</td></tr>
+            <tr><td><code>CooperativeStickyAssignor</code></td><td>Minimizes partition movement during rebalance for near zero-downtime rolling restarts</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Kafka clients negotiate an assignor from <code>PARTITION_ASSIGNMENT_STRATEGY_CONFIG</code>; check your client version's default list rather than assuming <code>RangeAssignor</code> alone, as recent versions ship a fallback chain that includes <code>CooperativeStickyAssignor</code>.</p>
+    </div>
+  </section>
+
+  <!-- ── C-07 BROKER ── -->
+  <section class="section" id="broker">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Broker</h2>
+      <span class="tag">C-07</span>
+    </div>
+
+    <div class="callout">
+      A single Kafka server that stores data, handles client requests, and manages partitions and replicas.
+    </div>
+    <p class="note"><strong>Example —</strong> Broker 1 stores all payment events from the last 7 days and serves them to SAP Commerce whenever needed for reconciliation.</p>
+  </section>
+
+  <!-- ── C-08 CLUSTER ── -->
+  <section class="section" id="cluster">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Cluster</h2>
+      <span class="tag">C-08</span>
+    </div>
+
+    <div class="callout">
+      A group of Kafka brokers working together for scalability, fault tolerance, and high availability.
+    </div>
+    <p class="note"><strong>Example —</strong> three brokers run together; if one goes down during a Black Friday traffic spike, the other two keep serving payment events to SAP Commerce without interruption.</p>
+  </section>
+
+  <!-- ── C-09 LEADER & FOLLOWER ── -->
+  <section class="section" id="leader-follower">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Leader &amp; Follower</h2>
+      <span class="tag">C-09</span>
+    </div>
+
+    <div class="callout">
+      For each partition, one broker acts as leader, handling all reads and writes, while follower brokers replicate its data for fault tolerance.
+    </div>
+    <p class="note"><strong>Example —</strong> Broker 1 leads partition 0 for PayPal payments; Brokers 2 and 3 replicate everything it writes. If Broker 1 goes down, one of the in-sync followers is promoted to leader automatically.</p>
+  </section>
+
+  <!-- ── C-10 ISR ── -->
+  <section class="section" id="isr">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>ISR (In-Sync Replicas)</h2>
+      <span class="tag">C-10</span>
+    </div>
+
+    <div class="callout">
+      The set of replicas — the leader plus every follower fully caught up with it — that are eligible to satisfy <code>acks=all</code>, guaranteeing data durability and consistency.
+    </div>
+    <p class="note"><strong>Example —</strong> a partition has 3 replicas: 1 leader + 2 followers. Both followers are fully caught up, so ISR = 3. If one follower falls behind, ISR drops to 2 (the leader and the remaining caught-up follower) — writes are still safe with <code>acks=all</code>, but durability margin has shrunk until the lagging follower catches back up.</p>
+  </section>
+
+  <!-- ── C-11 RECORD BATCH ── -->
+  <section class="section" id="record-batch">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Record Batch</h2>
+      <span class="tag">C-11</span>
+    </div>
+
+    <div class="callout">
+      A group of events sent together from producer to broker to improve network efficiency and storage throughput.
+    </div>
+    <p class="note"><strong>Example —</strong> PayPal sends 1,000 transaction records in one network call instead of making 1,000 separate calls to Kafka, dramatically cutting per-message network overhead.</p>
+  </section>
+
+  <!-- ── C-12 RETENTION POLICY ── -->
+  <section class="section" id="retention-policy">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Retention Policy</h2>
+      <span class="tag">C-12</span>
+    </div>
+
+    <div class="callout">
+      Rules that determine how long events are kept, based on a time duration, a storage size limit, or both.
+    </div>
+    <p class="note"><strong>Example —</strong> keep all payment events for 90 days for audit compliance; after that, Kafka automatically deletes the oldest transactions to free up disk space.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/e6c7032a-35c4-4eaf-8bd5-4e7ef0cd61e8" alt="Retention policy deleting old segments" />
+  </section>
+
+  <!-- ── C-13 CONSUMER REBALANCE ── -->
+  <section class="section" id="consumer-rebalance">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Consumer Rebalance</h2>
+      <span class="tag">C-13</span>
+    </div>
+
+    <div class="callout">
+      The process of reassigning partitions among consumers when a consumer joins, leaves, or fails within a consumer group.
+    </div>
+    <p class="note"><strong>Example —</strong> one SAP Commerce payment processor crashes; Kafka automatically reassigns its partitions to the other two processors with no manual intervention. With <code>CooperativeStickyAssignor</code> this happens incrementally rather than stopping every consumer in the group at once.</p>
+  </section>
+
+  <!-- ── C-14 DLQ ── -->
+  <section class="section" id="dlq">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Dead Letter Queue (DLQ)</h2>
+      <span class="tag">C-14</span>
+    </div>
+
+    <div class="callout">
+      A special topic that stores messages which failed processing after all retry attempts have been exhausted.
+    </div>
+    <p class="note"><strong>Example —</strong> a transaction with an expired credit card fails 3 retry attempts; it moves to the DLQ, where a SAP Commerce admin can review it and contact the customer manually.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/0bb56084-4d8d-431a-af7a-c46683944214" alt="Dead Letter Queue flow after exhausted retries" />
+
+    <div class="subsection">
+      <h3>// DeadLetterPublishingRecoverer</h3>
+      <p class="note">After all retries fail, this takes the failed message and publishes it to a dead letter topic instead of just dropping it.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>new DeadLetterPublishingRecoverer(template, (record, ex) -&gt; {...})</code></td><td>Creates a recoverer that uses your <code>KafkaTemplate</code> to send failed messages to the DLQ</td></tr>
+            <tr><td><code>record.topic() + ".DLT"</code></td><td>Takes the original topic name like <code>user-topic</code> and adds <code>.DLT</code> to create <code>user-topic.DLT</code></td></tr>
+            <tr><td><code>return new TopicPartition(dlqTopic, record.partition())</code></td><td>Sends the failed message to the same partition number in the DLQ that it came from in the original topic</td></tr>
+            <tr><td><code>recoverer.setHeadersFunction(...)</code></td><td>Adds extra metadata as headers so you know why and where the message failed</td></tr>
+            <tr><td><code>headers.add("original-topic", ...)</code></td><td>Stores the original topic name so you can reprocess to the correct topic later</td></tr>
+            <tr><td><code>headers.add("original-partition", ...)</code></td><td>Stores the original partition number for debugging</td></tr>
+            <tr><td><code>headers.add("original-offset", ...)</code></td><td>Stores the original offset position for tracking</td></tr>
+            <tr><td><code>headers.add("error-message", ...)</code></td><td>Stores the exception reason, like "invalid data" or "connection timeout"</td></tr>
+            <tr><td><code>headers.add("error-timestamp", ...)</code></td><td>Stores when the failure happened, for time-based debugging</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// DefaultErrorHandler</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 3))</code></td><td>Creates an error handler that retries failed messages 3 times, waiting 1 second between each retry</td></tr>
+            <tr><td><code>FixedBackOff(1000L, 3)</code></td><td><code>1000L</code> = wait 1 second before retry, <code>3</code> = maximum 3 retry attempts</td></tr>
+            <tr><td><code>handler.addNotRetryableExceptions(...)</code></td><td>These exceptions go straight to the DLQ without any retry, because retrying won't fix them (e.g. deserialization errors)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── C-15 SCHEMA REGISTRY ── -->
+  <section class="section" id="schema-registry">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Schema Registry</h2>
+      <span class="tag">C-15</span>
+    </div>
+
+    <div class="callout">
+      A service that stores and validates Avro/Protobuf/JSON schemas to ensure compatibility between producers and consumers as schemas evolve.
+    </div>
+    <p class="note"><strong>Example —</strong> PayPal adds a <code>currencyCode</code> field to the transaction schema; the existing SAP Commerce consumer keeps working unchanged, because the registry's <code>BACKWARD</code> compatibility check rejects schema changes that would break it.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/cde9e9f6-fe08-45b7-96c7-eb77f77736ac" alt="Schema Registry validating producer and consumer schemas" />
+  </section>
+
+  <!-- ── C-16 CUSTOM PARTITIONER ── -->
+  <section class="section" id="custom-partitioner">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Custom Partitioner</h2>
+      <span class="tag">C-16</span>
+    </div>
+
+    <div class="callout">
+      A user-defined strategy, set via <code>PARTITIONER_CLASS_CONFIG</code>, that overrides Kafka's default key-hash partitioning and routes a message to a partition based on business logic or message content.
+    </div>
+    <p class="note"><strong>Example —</strong> custom logic routes PayPal transactions to partition 0, Stripe to partition 1, and any transaction above $10,000 to partition 2 for separate, slower fraud-review processing.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/21d9d357-fe11-452a-af51-859abebf6797" alt="Custom partitioner routing logic" />
+  </section>
+
+  <!-- ── C-17 IDEMPOTENT PRODUCER ── -->
+  <section class="section" id="idempotent-producer">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Idempotent Producer</h2>
+      <span class="tag">C-17</span>
+    </div>
+
+    <div class="callout">
+      A producer configuration (<code>ENABLE_IDEMPOTENCE_CONFIG=true</code>) that assigns each message a sequence number per partition so the broker can detect and discard duplicates created by producer retries — exactly-once delivery <em>within a single partition</em>. Coordinating exactly-once writes <em>across</em> multiple partitions or topics needs the Transactional Producer below.
+    </div>
+    <p class="note"><strong>Example —</strong> a network blip causes PayPal's client to retry a send it thinks failed; the idempotent producer recognizes the duplicate sequence number and the broker keeps only one copy, so the customer is charged once, not twice.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/92c069a3-3cdc-4351-ba4c-190f1b692bf4" alt="Idempotent producer deduplicating retried sends" />
+  </section>
+
+  <!-- ── C-18 TRANSACTIONAL PRODUCER ── -->
+  <section class="section" id="transactional-producer">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Transactional Producer</h2>
+      <span class="tag">C-18</span>
+    </div>
+
+    <div class="callout">
+      A producer that can atomically send multiple messages across partitions and topics, where all messages succeed together or fail together — built on top of the idempotent producer plus a transaction coordinator.
+    </div>
+    <p class="note"><strong>Example —</strong> a successful payment sends both a <code>payment-confirmed</code> event and an <code>inventory-reserved</code> event in one transaction; if inventory reservation fails, the payment event is rolled back too, so no order is left half-processed.</p>
+    <img class="diagram" src="https://github.com/user-attachments/assets/a1f98ef9-8631-4148-91b7-058194563c4f" alt="Transactional producer committing multiple messages atomically" />
+  </section>
+
+
+  <div class="part-divider"></div>
+
+  <!-- ── PART 02 INTRO ── -->
+  <div class="part-intro" id="kafka-streams">
+    <div class="part-label">Part 02 — Stream Processing</div>
+    <h2>Kafka Streams</h2>
+    <p>Practical reference for stream processing topologies — joins, state stores, windowing, and serdes using Spring Boot and Confluent Schema Registry.</p>
+  </div>
+
+  <!-- INDEX -->
+  <div class="toc-page">
+    <a href="#stateless-vs-stateful"><span class="num">K-01</span>Stateless vs Stateful</a>
+    <a href="#stream-stream"><span class="num">K-02</span>Stream-Stream Joins</a>
+    <a href="#stream-table"><span class="num">K-03</span>Stream-Table Joins</a>
+    <a href="#table-table"><span class="num">K-04</span>Table-Table Joins</a>
+    <a href="#global-table"><span class="num">K-05</span>GlobalKTable Joins</a>
+    <a href="#comparison"><span class="num">K-06</span>KStream vs KTable vs GlobalKTable</a>
+    <a href="#rules"><span class="num">K-07</span>Key Rules to Remember</a>
+    <a href="#getting-started"><span class="num">K-08</span>Getting Started</a>
+  </div>
+
+  <!-- ── 01 STATELESS VS STATEFUL ── -->
+  <section class="section" id="stateless-vs-stateful">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Stateless vs Stateful Processing</h2>
+      <span class="tag">K01</span>
+    </div>
+
+    <div class="callout">
+      <strong>Stateless</strong> — operations that process each record independently with no memory of past records: <code>filter</code>, <code>map</code>, <code>branch</code>, <code>flatMap</code>.<br/>
+      <strong>Stateful</strong> — operations that accumulate or aggregate across records over time: <code>groupByKey</code>, <code>aggregate</code>, <code>count</code>, <code>reduce</code>, <code>join</code> with windows.
+    </div>
+
+    <div class="subsection">
+      <h3>// Stateless Processing Topology</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/025f3274-be16-493f-bf6c-4c061180fab3" alt="Stateless Processing Topology" />
+    </div>
+
+    <div class="subsection">
+      <h3>// Stateful Processing Topology</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/3ebc975a-b974-490c-b9fa-3468d1080961" alt="Stateful Processing Topology" />
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Stateful (Aggregation Topology)</th>
+            <th>Stateless (Processing Topology)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>State Stores</td><td>✅ Yes — RocksDB (<code>company-stats-store</code>)</td><td>❌ No</td></tr>
+          <tr><td>Memory Usage</td><td>Higher — stores per-key aggregates</td><td>Minimal — no retained state</td></tr>
+          <tr><td>Operations</td><td><code>groupByKey</code>, <code>aggregate</code></td><td><code>filter</code>, <code>branch</code></td></tr>
+          <tr><td>Output Type</td><td><code>KTable</code> (changelog stream)</td><td><code>KStream</code> (branched to multiple topics)</td></tr>
+          <tr><td>Use Case</td><td>Rolling statistics per company</td><td>Route and filter events without aggregation</td></tr>
+          <tr><td>Exactly-Once</td><td>Requires state store recovery</td><td>Simpler — no recovery needed</td></tr>
+          <tr><td>Scalability</td><td>Scales with number of keys (companies)</td><td>Scales with throughput</td></tr>
+          <tr><td>Example Output</td><td>Company headcount, avg salary, active/inactive counts</td><td>Users partitioned by country</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 02 STREAM-STREAM JOINS ── -->
+  <section class="section" id="stream-stream">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Stream-Stream Joins</h2>
+      <span class="tag">K02</span>
+    </div>
+
+    <div class="callout blue">
+      <strong>Co-partitioning required.</strong> Both streams must have the same number of partitions and use the same partitioning strategy. All stream-stream joins require a <code>JoinWindows</code> — records must arrive within the window to be matched.
+    </div>
+
+    <div class="subsection">
+      <h3>// Inner Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/47272426-8b6a-4703-a24b-1a4574613a6d" alt="Stream-Stream Inner Join" />
+    </div>
+
+    <div class="subsection">
+      <h3>// Left Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/d6a19f10-919a-40aa-9f00-1d1a0c7f2977" alt="Stream-Stream Left Join" />
+    </div>
+
+    <div class="subsection">
+      <h3>// Outer Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/798b2707-b173-408e-b25a-d8b5193b3fab" alt="Stream-Stream Outer Join" />
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Join Type</th>
+            <th>Output Keys (A={1,2,4} B={1,2,5})</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Inner</td><td>1, 2</td><td>Keys present in both A and B. 4 and 5 are dropped.</td></tr>
+          <tr><td>Left</td><td>1, 2, 4</td><td>All A keys. 4 has no match → right side = null.</td></tr>
+          <tr><td>Outer</td><td>1, 2, 4, 5</td><td>All keys from A and B. 4 → right null; 5 → left null.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <h3>// Asymmetric Inner Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/33b3d30b-19cf-4eb5-b72c-75d57f83c743" alt="Asymmetric Inner Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Stream B can only join with Stream A records that arrived <em>before</em> it — <code>.before(Duration.ZERO).after(...)</code>. Stream A cannot join with future Stream B records.</p>
+    </div>
+
+    <div class="subsection">
+      <h3>// Windowed Inner Join with Grace Period</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/9038b30e-bb58-43ec-a6bb-aef872c31820" alt="Windowed Inner Join with Grace" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Adds a grace period after the window closes to accept late-arriving records. Records that arrive during grace are still matched before the window is finalized.</p>
+    </div>
+
+    <pre><span class="cm">// Symmetric window — records within ±5 min of each other</span>
+<span class="cl">JoinWindows</span> symmetricWindow = <span class="cl">JoinWindows</span>
+        .<span class="fn">ofTimeDifferenceWithNoGrace</span>(<span class="cl">Duration</span>.<span class="fn">ofMinutes</span>(<span class="nu">5</span>));
+
+<span class="cm">// With grace period — accepts late records up to 30s after window closes</span>
+<span class="cl">JoinWindows</span> windowWithGrace = <span class="cl">JoinWindows</span>
+        .<span class="fn">ofTimeDifferenceAndGrace</span>(<span class="cl">Duration</span>.<span class="fn">ofMinutes</span>(<span class="nu">5</span>), <span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nu">30</span>));
+
+<span class="cm">// Asymmetric — B must follow A (B only looks back, not forward)</span>
+<span class="cl">JoinWindows</span> asymmetricWindow = <span class="cl">JoinWindows</span>
+        .<span class="fn">ofTimeDifferenceWithNoGrace</span>(<span class="cl">Duration</span>.<span class="fn">ofMinutes</span>(<span class="nu">10</span>))
+        .<span class="fn">before</span>(<span class="cl">Duration</span>.ZERO)
+        .<span class="fn">after</span>(<span class="cl">Duration</span>.<span class="fn">ofMinutes</span>(<span class="nu">10</span>));
+
+streamA.<span class="fn">join</span>(streamB, (userA, userB) -> userA.<span class="fn">getUserId</span>() + <span class="str">" | "</span> + userB.<span class="fn">getStatus</span>(),
+        symmetricWindow,
+        <span class="cl">StreamJoined</span>.&lt;<span class="cl">String</span>, <span class="cl">AvroUser</span>, <span class="cl">AvroUser</span>&gt;<span class="fn">as</span>(<span class="str">"store-ss-inner"</span>)
+                .<span class="fn">withKeySerde</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>())
+                .<span class="fn">withValueSerde</span>(userSerde)
+                .<span class="fn">withOtherValueSerde</span>(userSerde))
+        .<span class="fn">to</span>(<span class="str">"join-stream-stream-inner-v1"</span>);</pre>
+  </section>
+
+  <!-- ── 03 STREAM-TABLE JOINS ── -->
+  <section class="section" id="stream-table">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Stream-Table Joins</h2>
+      <span class="tag">K03</span>
+    </div>
+
+    <div class="callout blue">
+      <strong>Co-partitioning required.</strong> The stream and table must share the same key. If the stream is keyed differently (e.g. <code>userId</code> joining a <code>companyId</code>-keyed table), use <code>selectKey()</code> first — this triggers an automatic internal repartition topic.
+    </div>
+
+    <div class="subsection">
+      <h3>// Inner Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/9bd7f5a9-7cee-4a02-bc45-03fd8c339b00" alt="Stream-Table Inner Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Emits a result only when the stream record has a matching key in the KTable. If the table has no entry for that key yet, the stream record is dropped.</p>
+    </div>
+
+    <div class="subsection">
+      <h3>// Left Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/6d71cb16-f1ed-41a6-91ed-da484aa01bf7" alt="Stream-Table Left Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Always emits a result for every stream record. If no match in the table, the table side is <code>null</code>. Useful for enrichment where reference data may not exist yet.</p>
+    </div>
+
+    <div class="subsection">
+      <h3>// Versioned (Temporal) Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/1bf2040e-faad-4157-ba40-4cf50da31a83" alt="Stream-Table Versioned Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Uses a versioned state store to look up the table value <em>at the time the stream event occurred</em> — not the latest value. Requires <code>Stores.persistentVersionedKeyValueStore()</code>.</p>
+    </div>
+
+    <pre><span class="cm">// Rekey stream to match KTable key before joining</span>
+<span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">AvroUser</span>&gt; usersRekeyed = userStream
+        .<span class="fn">selectKey</span>((userId, user) -> user.<span class="fn">getCompanyId</span>(),
+                <span class="cl">Named</span>.<span class="fn">as</span>(<span class="str">"rekey-user-to-companyId"</span>));
+
+<span class="cl">KTable</span>&lt;<span class="cl">String</span>, <span class="cl">AvroCompany</span>&gt; companyTable = builder
+        .<span class="fn">table</span>(<span class="str">"company-topic"</span>,
+                <span class="cl">Consumed</span>.<span class="fn">with</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>(), companySerde),
+                <span class="cl">Materialized</span>.<span class="fn">as</span>(<span class="str">"store-company-lookup"</span>));
+
+usersRekeyed
+        .<span class="fn">join</span>(companyTable,
+                (user, company) -> user.<span class="fn">getFirstName</span>() + <span class="str">" works at "</span> + company.<span class="fn">getName</span>())
+        .<span class="fn">to</span>(<span class="str">"join-stream-table-inner-v1"</span>);</pre>
+
+    <div class="callout red">
+      <strong>Important:</strong> Each topic can only be registered once per <code>StreamsBuilder</code>. Do not register the same topic as both a regular KTable and a versioned KTable — this will throw a <code>TopologyException</code>.
+    </div>
+  </section>
+
+  <!-- ── 04 TABLE-TABLE JOINS ── -->
+  <section class="section" id="table-table">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Table-Table Joins</h2>
+      <span class="tag">K04</span>
+    </div>
+
+    <div class="callout blue">
+      <strong>Standard Table-Table join requires the same key on both sides.</strong> If your tables have different keys (e.g. <code>userId</code> vs <code>companyId</code>), use a Foreign Key join — it extracts the FK from the left table internally and handles the key mismatch without rekeying.
+    </div>
+
+    <div class="subsection">
+      <h3>// Foreign Key Join — KTable to KTable</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/49632caa-65af-46af-8e55-640fa583f521" alt="KTable Foreign Key Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Left table is keyed by <code>userId</code>, right table by <code>companyId</code>. A <code>KeyValueMapper</code> extracts <code>companyId</code> from the user record to look up the company — no manual rekey needed.</p>
+    </div>
+
+    <pre><span class="cm">// Standard join — both tables must share the same key</span>
+userTable.<span class="fn">join</span>(companyTable,
+        (user, company) -> user.<span class="fn">getName</span>() + <span class="str">" at "</span> + company.<span class="fn">getName</span>(),
+        <span class="cl">Materialized</span>.&lt;<span class="cl">String</span>, <span class="cl">String</span>, <span class="cl">KeyValueStore</span>&lt;<span class="cl">Bytes</span>, <span class="kw">byte</span>[]&gt;&gt;<span class="fn">as</span>(<span class="str">"store-tt-inner"</span>))
+        .<span class="fn">toStream</span>()
+        .<span class="fn">to</span>(<span class="str">"join-table-table-inner-v1"</span>);
+
+<span class="cm">// Foreign Key join — user keyed by userId, company keyed by companyId</span>
+userTable.<span class="fn">join</span>(companyTable,
+        user -> user.<span class="fn">getCompanyId</span>(),     <span class="cm">// FK extractor</span>
+        (user, company) -> user.<span class="fn">getName</span>() + <span class="str">" at "</span> + company.<span class="fn">getName</span>(),
+        <span class="cl">Materialized</span>.&lt;<span class="cl">String</span>, <span class="cl">String</span>, <span class="cl">KeyValueStore</span>&lt;<span class="cl">Bytes</span>, <span class="kw">byte</span>[]&gt;&gt;<span class="fn">as</span>(<span class="str">"store-tt-fk"</span>))
+        .<span class="fn">toStream</span>()
+        .<span class="fn">to</span>(<span class="str">"join-table-table-fk-v1"</span>);</pre>
+
+    <div class="callout red">
+      <strong>Topic conflict:</strong> Do not use the same topic (e.g. <code>user-topic</code>) as both a KStream source in one topology and a KTable source in another — they share one <code>StreamsBuilder</code> and Kafka Streams will throw <code>InvalidTopologyException</code>. Use dedicated changelog topics for Table-Table joins.
+    </div>
+  </section>
+
+  <!-- ── 05 GLOBAL TABLE JOINS ── -->
+  <section class="section" id="global-table">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>GlobalKTable Joins</h2>
+      <span class="tag">K05</span>
+    </div>
+
+    <div class="callout green">
+      <strong>No co-partitioning required.</strong> A GlobalKTable is fully replicated to every application instance. The <code>KeyValueMapper</code> at join time extracts the lookup key from the stream record — the stream does not need to be rekeyed first.
+    </div>
+
+    <div class="subsection">
+      <h3>// Inner Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/9c0fbd40-d253-467c-9981-c0568c36f476" alt="GlobalKTable Inner Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Emits a result only when the <code>KeyValueMapper</code> finds a matching key in the GlobalKTable. Stream records that resolve to a key not in the table are dropped.</p>
+    </div>
+
+    <div class="subsection">
+      <h3>// Left Join</h3>
+      <img class="diagram" src="https://github.com/user-attachments/assets/79e133f0-77ef-4118-ada7-ba97088bb392" alt="GlobalKTable Left Join" />
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem;">Always emits a result for every stream record. If the <code>KeyValueMapper</code> resolves to a key not in the table, the table side is <code>null</code> — useful while the global table is still loading at startup.</p>
+    </div>
+
+    <pre><span class="cl">GlobalKTable</span>&lt;<span class="cl">String</span>, <span class="cl">AvroCompany</span>&gt; globalCompany = builder
+        .<span class="fn">globalTable</span>(<span class="str">"global-company-topic"</span>,
+                <span class="cl">Consumed</span>.<span class="fn">with</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>(), companySerde),
+                <span class="cl">Materialized</span>.<span class="fn">as</span>(<span class="str">"store-global-company"</span>));
+
+<span class="cm">// KeyValueMapper: (streamKey, streamValue) -> lookupKey in GlobalKTable</span>
+userStream
+        .<span class="fn">join</span>(globalCompany,
+                (userId, user) -> user.<span class="fn">getCompanyId</span>(),   <span class="cm">// no selectKey() needed</span>
+                (user, company) -> user.<span class="fn">getName</span>() + <span class="str">" at "</span> + company.<span class="fn">getName</span>())
+        .<span class="fn">to</span>(<span class="str">"join-global-inner-v1"</span>);</pre>
+
+    <div class="callout red">
+      <strong>Conflict:</strong> A GlobalKTable and a KTable cannot both be registered from the same source topic in the same topology. Use a dedicated topic for the GlobalKTable (e.g. <code>global-company-topic</code>).
+    </div>
+  </section>
+
+  <!-- ── 06 COMPARISON ── -->
+  <section class="section" id="comparison">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>KStream vs KTable vs GlobalKTable</h2>
+      <span class="tag">K06</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>KStream</th><th>KTable</th><th>GlobalKTable</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mental Model</td><td>Append-only event log</td><td>Changelog — latest value per key wins</td><td>Fully replicated lookup table on every instance</td></tr>
+          <tr><td>Data Semantics</td><td>Each record is an independent fact — same key = multiple events</td><td>Each record is an upsert — same key = update, latest wins</td><td>Same as KTable but fully replicated</td></tr>
+          <tr><td>Best For</td><td>Events: clicks, payments, sensor readings, transactions</td><td>Entity data: user profiles, account balances, prices</td><td>Small lookup tables: currency codes, country names, feature flags</td></tr>
+          <tr><td>When To Use</td><td><em>"Did it happen?"</em></td><td><em>"What is it now?"</em></td><td>Small table + skip co-partitioning</td></tr>
+          <tr><td>Join With</td><td>KTable, GlobalKTable, KStream</td><td>KTable only</td><td>KStream only</td></tr>
+          <tr><td>Co-partitioning</td><td>Required with KTable</td><td>Required with KStream &amp; KTable</td><td class="yes">❌ Not required</td></tr>
+          <tr><td>Windowed Joins</td><td class="yes">✅ Yes — JoinWindows</td><td class="no">❌ No</td><td class="no">❌ No</td></tr>
+          <tr><td>Stateful?</td><td>Only when aggregating</td><td class="yes">✅ Local RocksDB per partition</td><td class="yes">✅ Full copy on every instance</td></tr>
+          <tr><td>Scalability</td><td>Scales with partitions</td><td>Scales with partitions</td><td class="no">❌ Full copy — does not scale</td></tr>
+          <tr><td>Startup Behaviour</td><td>Immediate</td><td>Restores from changelog</td><td>⚠️ Loads all partitions first — slower</td></tr>
+          <tr><td>Fault Tolerance</td><td>Stateless — no recovery</td><td>Replayed from changelog topic</td><td>Replayed from source topic</td></tr>
+          <tr><td>Null (Tombstone)</td><td>Passes through as event</td><td>Deletes key from state store</td><td>Deletes key from state store</td></tr>
+          <tr><td>Can Re-key?</td><td>✅ <code>selectKey()</code></td><td>✅ <code>toStream().selectKey().toTable()</code></td><td>❌ Use KeyValueMapper at join time</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection" style="margin-top:2rem;">
+      <h3>// Join Compatibility Matrix</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Left \ Right</th><th>KStream</th><th>KTable</th><th>GlobalKTable</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>KStream</td><td class="yes">✅ Windowed join</td><td class="yes">✅ Stream-Table join</td><td class="yes">✅ Stream-GlobalTable join</td></tr>
+            <tr><td>KTable</td><td class="no">❌ Not supported (use <code>KStream.join(KTable)</code> instead)</td><td class="yes">✅ Table-Table join</td><td class="no">❌ Not supported</td></tr>
+            <tr><td>GlobalKTable</td><td class="no">❌ Not supported</td><td class="no">❌ Not supported</td><td class="no">❌ Not supported</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// Decision Guide</h3>
+      <div class="decision-tree"><span class="q">Is the data event-shaped (something happened)?</span>
+└── <span class="a">YES → KStream</span>
+
+<span class="q">Is the data entity-shaped (current state of something)?</span>
+    ├── <span class="q">Is the dataset large (millions of rows)?</span>
+    │   └── <span class="a2">YES → KTable</span> (partitioned, scalable)
+    │
+    └── <span class="q">Is the dataset small (thousands of rows)?</span>
+        └── <span class="a3">YES → GlobalKTable</span> (no co-partitioning, simpler joins)</div>
+    </div>
+
+    <div class="subsection">
+      <h3>// Code Patterns</h3>
+      <pre><span class="cm">// KStream — Event Processing</span>
+<span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">AvroUser</span>&gt; userStream = builder
+        .<span class="fn">stream</span>(<span class="str">"user-topic"</span>, <span class="cl">Consumed</span>.<span class="fn">with</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>(), userSerde));
+
+<span class="cm">// KTable — Latest State Lookup</span>
+<span class="cl">KTable</span>&lt;<span class="cl">String</span>, <span class="cl">AvroCompany</span>&gt; companyTable = builder
+        .<span class="fn">table</span>(<span class="str">"company-topic"</span>,
+                <span class="cl">Consumed</span>.<span class="fn">with</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>(), companySerde),
+                <span class="cl">Materialized</span>.<span class="fn">as</span>(<span class="str">"store-company-lookup"</span>));
+
+<span class="cm">// GlobalKTable — Replicated Lookup (No Co-partitioning)</span>
+<span class="cl">GlobalKTable</span>&lt;<span class="cl">String</span>, <span class="cl">AvroCompany</span>&gt; globalCompany = builder
+        .<span class="fn">globalTable</span>(<span class="str">"global-company-topic"</span>,
+                <span class="cl">Consumed</span>.<span class="fn">with</span>(<span class="cl">Serdes</span>.<span class="fn">String</span>(), companySerde),
+                <span class="cl">Materialized</span>.<span class="fn">as</span>(<span class="str">"store-global-company"</span>));
+
+<span class="cm">// Stream-Table Join (requires selectKey for co-partitioning)</span>
+userStream
+        .<span class="fn">selectKey</span>((k, user) -> user.<span class="fn">getCompanyId</span>())
+        .<span class="fn">join</span>(companyTable,
+              (user, company) -> user.<span class="fn">getName</span>() + <span class="str">" works at "</span> + company.<span class="fn">getName</span>());
+
+<span class="cm">// Stream-GlobalTable Join (no co-partitioning needed)</span>
+userStream
+        .<span class="fn">join</span>(globalCompany,
+              (userId, user) -> user.<span class="fn">getCompanyId</span>(),
+              (user, company) -> user.<span class="fn">getName</span>() + <span class="str">" works at "</span> + company.<span class="fn">getName</span>());</pre>
+    </div>
+  </section>
+
+  <!-- ── 07 KEY RULES ── -->
+  <section class="section" id="rules">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Key Rules to Remember</h2>
+      <span class="tag">K07</span>
+    </div>
+
+    <ul class="rules">
+      <li>
+        <span class="icon">🚫</span>
+        <div>The <strong>same topic cannot be registered as both KTable and GlobalKTable</strong> in the same topology — throws <code>TopologyException</code> at startup.</div>
+      </li>
+      <li>
+        <span class="icon">🚫</span>
+        <div>The <strong>same topic cannot be registered as both KStream and KTable</strong> in the same topology — use dedicated changelog topics for Table-Table joins.</div>
+      </li>
+      <li>
+        <span class="icon">⚙️</span>
+        <div>Enable <strong>topology optimization</strong> to automatically merge duplicate KStream source registrations:
+          <pre style="margin-top:0.5rem;margin-bottom:0;">spring.kafka.streams.properties.topology.optimization=all</pre>
+        </div>
+      </li>
+      <li>
+        <span class="icon">🏷️</span>
+        <div><strong>Name every processor</strong> with <code>.withName()</code> and <code>Named.as()</code>. Duplicate processor names across topologies sharing the same <code>StreamsBuilder</code> cause <code>TopologyException</code>.</div>
+      </li>
+      <li>
+        <span class="icon">🌍</span>
+        <div><strong>GlobalKTable loads all data at startup</strong> before processing begins. Keep it small or face slow restarts. Ideal for reference data under a few hundred MB.</div>
+      </li>
+      <li>
+        <span class="icon">🔑</span>
+        <div><strong>Co-partitioning</strong> = same number of partitions + same partitioning strategy + same key type. Violated co-partitioning causes silent data loss — no errors, just missing join output.</div>
+      </li>
+      <li>
+        <span class="icon">🔗</span>
+        <div><strong>KTable FK join</strong> handles key mismatch internally — no manual <code>selectKey()</code> needed:
+          <pre style="margin-top:0.5rem;margin-bottom:0;">userTable.join(companyTable, user -> user.getCompanyId(), ...)</pre>
+        </div>
+      </li>
+      <li>
+        <span class="icon">⏱️</span>
+        <div><strong>Stream-Table inner join timing:</strong> if a stream record arrives before the KTable is populated, it is dropped — no retry. Start the company generator before the user generator to pre-populate the KTable.</div>
+      </li>
+      <li>
+        <span class="icon">🔄</span>
+        <div><strong>Exactly-once processing</strong> (<code>processing.guarantee=exactly_once_v2</code>) requires Kafka brokers ≥ 2.5 and at least 3 replicas. All <code>KafkaTemplate.send()</code> calls must run inside <code>executeInTransaction()</code> or a <code>@Transactional</code> method.</div>
+      </li>
+      <li>
+        <span class="icon">🗝️</span>
+        <div><strong>Key format must match exactly</strong> between producer and consumer. Mismatched formats (e.g. <code>COMP-05</code> vs <code>COMP-005</code>) cause inner joins to produce zero output with no error — always log and verify key values.</div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── 08 GETTING STARTED ── -->
+  <section class="section" id="getting-started">
+    <div class="section-header">
+      <div class="dot"></div>
+      <h2>Getting Started</h2>
+      <span class="tag">K08</span>
+    </div>
+
+    <div class="subsection">
+      <h3>// Prerequisites</h3>
+      <ul class="rules">
+        <li><span class="icon">🐳</span><div>Docker and Docker Compose</div></li>
+        <li><span class="icon">☕</span><div>Java 17</div></li>
+        <li><span class="icon">📦</span><div>Maven</div></li>
+      </ul>
+    </div>
+
+    <div class="subsection">
+      <h3>// Start Infrastructure</h3>
+      <pre>docker-compose up -d</pre>
+      <p class="note">Brings up the broker(s), Schema Registry, and any supporting services defined in <code>docker-compose.yml</code>.</p>
+    </div>
+
+    <div class="subsection">
+      <h3>// Test the API</h3>
+      <p class="note">Once the producer app is running, send these requests to publish an <em>AvroUser</em> and an <em>AvroCompany</em> record:</p>
+      <pre><span class="cm">POST http://localhost:8083/api/v1/user</span>
+
+{
+  <span class="str">"firstName"</span>: <span class="str">"Suhas"</span>,
+  <span class="str">"lastName"</span>: <span class="str">"Prabhu"</span>,
+  <span class="str">"age"</span>: <span class="nu">28</span>,
+  <span class="str">"active"</span>: <span class="kw">true</span>,
+  <span class="str">"userId"</span>: <span class="str">"USER-001"</span>,
+  <span class="str">"companyId"</span>: <span class="str">"COMP-001"</span>,
+  <span class="str">"department"</span>: <span class="str">"ENGINEERING"</span>,
+  <span class="str">"country"</span>: <span class="str">"IN"</span>,
+  <span class="str">"salary"</span>: <span class="nu">2.00</span>,
+  <span class="str">"status"</span>: <span class="str">"ACTIVE"</span>,
+  <span class="str">"createdAt"</span>: <span class="nu">1717000000000</span>
+}</pre>
+      <pre><span class="cm">POST http://localhost:8083/api/v1/company</span>
+
+{
+  <span class="str">"name"</span>: <span class="str">"Kafka Solutions"</span>,
+  <span class="str">"address"</span>: <span class="str">"42 Manyata Park, Bangalore"</span>,
+  <span class="str">"employeeCount"</span>: <span class="nu">500</span>,
+  <span class="str">"softwareCompany"</span>: <span class="kw">true</span>,
+  <span class="str">"companyId"</span>: <span class="str">"COMP-002"</span>,
+  <span class="str">"industry"</span>: <span class="str">"TECH"</span>,
+  <span class="str">"country"</span>: <span class="str">"IN"</span>,
+  <span class="str">"revenue"</span>: <span class="nu">15000000.00</span>,
+  <span class="str">"updatedAt"</span>: <span class="nu">1717000000000</span>
+}</pre>
+      <div class="callout">
+        <strong>Note:</strong> use a matching <code>companyId</code> (e.g. <code>COMP-001</code>) on a user record and a company record if you want to see the Stream-Table and GlobalKTable join examples above actually produce output — joins emit nothing for keys that don't exist on both sides.
+      </div>
+    </div>
+  </section>
+  </div>
+
+</div>
+
+<footer>
+  kafka · spring-boot · kafka-streams · avro · confluent schema-registry · built with ☕
+</footer>
+
+<script>
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('sidebarBackdrop');
+  var toggle = document.getElementById('tocToggle');
+
+  function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('show'); }
+  function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+
+  toggle.addEventListener('click', function () {
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+  backdrop.addEventListener('click', closeSidebar);
+
+  var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  tocLinks.forEach(function (a) {
+    a.addEventListener('click', function () {
+      if (window.innerWidth <= 900) closeSidebar();
+    });
+  });
+
+  var targets = tocLinks
+    .map(function (a) { return document.getElementById(a.getAttribute('data-target')); })
+    .filter(Boolean);
+
+  function setActive(id) {
+    tocLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('data-target') === id);
+    });
+    var active = sidebar.querySelector('a.active');
+    if (active) active.scrollIntoView({ block: 'nearest' });
+  }
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var observer = new IntersectionObserver(function (entries) {
+      var visible = entries.filter(function (e) { return e.isIntersecting; });
+      if (visible.length) {
+        visible.sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+        setActive(visible[0].target.id);
+      }
+    }, { rootMargin: '-60px 0px -75% 0px', threshold: 0 });
+
+    targets.forEach(function (t) { observer.observe(t); });
+  }
+})();
+</script>
+
+</body>
+</html>
