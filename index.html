@@ -78,6 +78,27 @@
   }
   .github-link svg { flex-shrink: 0; }
 
+  /* ── SOURCE CLASS LINKS in section headers ── */
+  .src-link {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.67rem;
+    color: var(--accent2);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.12rem 0.45rem;
+    background: var(--tag-bg);
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .src-link:hover {
+    background: #e8f0fe;
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
   .toc-toggle {
     display: none;
     align-items: center;
@@ -666,6 +687,8 @@
       <div class="dot"></div>
       <h2>Producer</h2>
       <span class="tag">C-01</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/KafkaMessageProducer.java" target="_blank" rel="noopener" title="KafkaMessageProducer.java">⌥ KafkaMessageProducer</a>
     </div>
 
     <div class="callout">
@@ -716,6 +739,8 @@
       <div class="dot"></div>
       <h2>Consumer</h2>
       <span class="tag">C-02</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/config/KafkaConsumerConfig.java" target="_blank" rel="noopener" title="KafkaConsumerConfig.java">⌥ KafkaConsumerConfig</a>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/KafkaMessageConsumer.java" target="_blank" rel="noopener" title="KafkaMessageConsumer.java">⌥ KafkaMessageConsumer</a>
     </div>
 
     <div class="callout">
@@ -793,6 +818,7 @@
       <div class="dot"></div>
       <h2>Topic</h2>
       <span class="tag">C-03</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaTopicConfig.java" target="_blank" rel="noopener" title="KafkaTopicConfig.java">⌥ KafkaTopicConfig</a>
     </div>
 
     <div class="callout">
@@ -809,6 +835,7 @@
       <div class="dot"></div>
       <h2>Partition</h2>
       <span class="tag">C-04</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaTopicConfig.java" target="_blank" rel="noopener" title="KafkaTopicConfig.java">⌥ KafkaTopicConfig</a>
     </div>
 
     <div class="callout">
@@ -823,6 +850,7 @@
       <div class="dot"></div>
       <h2>Offset</h2>
       <span class="tag">C-05</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/KafkaMessageConsumer.java" target="_blank" rel="noopener" title="KafkaMessageConsumer.java">⌥ KafkaMessageConsumer</a>
     </div>
 
     <div class="callout">
@@ -839,6 +867,7 @@
       <div class="dot"></div>
       <h2>Consumer Group</h2>
       <span class="tag">C-06</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/config/KafkaConsumerConfig.java" target="_blank" rel="noopener" title="KafkaConsumerConfig.java">⌥ KafkaConsumerConfig</a>
     </div>
 
     <div class="callout">
@@ -869,6 +898,7 @@
       <div class="dot"></div>
       <h2>Broker</h2>
       <span class="tag">C-07</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -883,6 +913,7 @@
       <div class="dot"></div>
       <h2>Cluster</h2>
       <span class="tag">C-08</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -897,6 +928,7 @@
       <div class="dot"></div>
       <h2>Leader &amp; Follower</h2>
       <span class="tag">C-09</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaTopicConfig.java" target="_blank" rel="noopener" title="KafkaTopicConfig.java">⌥ KafkaTopicConfig</a>
     </div>
 
     <div class="callout">
@@ -911,6 +943,7 @@
       <div class="dot"></div>
       <h2>ISR (In-Sync Replicas)</h2>
       <span class="tag">C-10</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaTopicConfig.java" target="_blank" rel="noopener" title="KafkaTopicConfig.java">⌥ KafkaTopicConfig</a>
     </div>
 
     <div class="callout">
@@ -925,6 +958,7 @@
       <div class="dot"></div>
       <h2>Record Batch</h2>
       <span class="tag">C-11</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -939,6 +973,7 @@
       <div class="dot"></div>
       <h2>Retention Policy</h2>
       <span class="tag">C-12</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaTopicConfig.java" target="_blank" rel="noopener" title="KafkaTopicConfig.java">⌥ KafkaTopicConfig</a>
     </div>
 
     <div class="callout">
@@ -954,6 +989,7 @@
       <div class="dot"></div>
       <h2>Consumer Rebalance</h2>
       <span class="tag">C-13</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/listener/KafkaRebalanceListener.java" target="_blank" rel="noopener" title="KafkaRebalanceListener.java">⌥ KafkaRebalanceListener</a>
     </div>
 
     <div class="callout">
@@ -968,6 +1004,7 @@
       <div class="dot"></div>
       <h2>Dead Letter Queue (DLQ)</h2>
       <span class="tag">C-14</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-consumer/src/main/java/com/message_broker/kafka_consumer/config/KafkaConsumerConfig.java" target="_blank" rel="noopener" title="KafkaConsumerConfig.java">⌥ KafkaConsumerConfig</a>
     </div>
 
     <div class="callout">
@@ -1018,6 +1055,7 @@
       <div class="dot"></div>
       <h2>Schema Registry</h2>
       <span class="tag">C-15</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -1033,6 +1071,7 @@
       <div class="dot"></div>
       <h2>Custom Partitioner</h2>
       <span class="tag">C-16</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/partitioner/DepartmentPartitioner.java" target="_blank" rel="noopener" title="DepartmentPartitioner.java">⌥ DepartmentPartitioner</a>
     </div>
 
     <div class="callout">
@@ -1048,6 +1087,7 @@
       <div class="dot"></div>
       <h2>Idempotent Producer</h2>
       <span class="tag">C-17</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -1063,6 +1103,8 @@
       <div class="dot"></div>
       <h2>Transactional Producer</h2>
       <span class="tag">C-18</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/KafkaMessageProducer.java" target="_blank" rel="noopener" title="KafkaMessageProducer.java">⌥ KafkaMessageProducer</a>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/config/KafkaProducerConfig.java" target="_blank" rel="noopener" title="KafkaProducerConfig.java">⌥ KafkaProducerConfig</a>
     </div>
 
     <div class="callout">
@@ -1100,6 +1142,8 @@
       <div class="dot"></div>
       <h2>Stateless vs Stateful Processing</h2>
       <span class="tag">K01</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/UserProcessingTopology.java" target="_blank" rel="noopener" title="UserProcessingTopology.java">⌥ UserProcessingTopology</a>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/UserCompanyAggregationTopology.java" target="_blank" rel="noopener" title="UserCompanyAggregationTopology.java">⌥ UserCompanyAggregationTopology</a>
     </div>
 
     <div class="callout">
@@ -1146,6 +1190,7 @@
       <div class="dot"></div>
       <h2>Stream-Stream Joins</h2>
       <span class="tag">K02</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/StreamStreamJoinTopology.java" target="_blank" rel="noopener" title="StreamStreamJoinTopology.java">⌥ StreamStreamJoinTopology</a>
     </div>
 
     <div class="callout blue">
@@ -1225,6 +1270,7 @@ streamA.<span class="fn">join</span>(streamB, (userA, userB) -> userA.<span clas
       <div class="dot"></div>
       <h2>Stream-Table Joins</h2>
       <span class="tag">K03</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/StreamTableJoinTopology.java" target="_blank" rel="noopener" title="StreamTableJoinTopology.java">⌥ StreamTableJoinTopology</a>
     </div>
 
     <div class="callout blue">
@@ -1275,6 +1321,7 @@ usersRekeyed
       <div class="dot"></div>
       <h2>Table-Table Joins</h2>
       <span class="tag">K04</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/TableTableJoinTopology.java" target="_blank" rel="noopener" title="TableTableJoinTopology.java">⌥ TableTableJoinTopology</a>
     </div>
 
     <div class="callout blue">
@@ -1313,6 +1360,7 @@ userTable.<span class="fn">join</span>(companyTable,
       <div class="dot"></div>
       <h2>GlobalKTable Joins</h2>
       <span class="tag">K05</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/topology/GlobalTableJoinTopology.java" target="_blank" rel="noopener" title="GlobalTableJoinTopology.java">⌥ GlobalTableJoinTopology</a>
     </div>
 
     <div class="callout green">
@@ -1354,6 +1402,7 @@ userStream
       <div class="dot"></div>
       <h2>KStream vs KTable vs GlobalKTable</h2>
       <span class="tag">K06</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/config/KafkaStreamsConfig.java" target="_blank" rel="noopener" title="KafkaStreamsConfig.java">⌥ KafkaStreamsConfig</a>
     </div>
 
     <div class="table-wrap">
@@ -1446,6 +1495,7 @@ userStream
       <div class="dot"></div>
       <h2>Key Rules to Remember</h2>
       <span class="tag">K07</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-streams/src/main/java/com/kafka/streams/config/KafkaStreamsConfig.java" target="_blank" rel="noopener" title="KafkaStreamsConfig.java">⌥ KafkaStreamsConfig</a>
     </div>
 
     <ul class="rules">
@@ -1502,26 +1552,72 @@ userStream
       <div class="dot"></div>
       <h2>Getting Started</h2>
       <span class="tag">K08</span>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka-producer/src/main/java/com/message_broker/kafka_producer/controller/KafkaController.java" target="_blank" rel="noopener" title="KafkaController.java">⌥ KafkaController</a>
+      <a class="src-link" href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka.json" target="_blank" rel="noopener" title="Postman Collection">📬 kafka.json (Postman)</a>
+    </div>
+
+    <div class="subsection">
+      <h3>// Services</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Service</th><th>Port</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>kafka1</code></td><td>9092</td><td>Kafka broker 1 (KRaft)</td></tr>
+            <tr><td><code>kafka2</code></td><td>9094</td><td>Kafka broker 2 (KRaft)</td></tr>
+            <tr><td><code>kafka3</code></td><td>9096</td><td>Kafka broker 3 (KRaft)</td></tr>
+            <tr><td><code>schema-registry</code></td><td>8081</td><td>Confluent Schema Registry</td></tr>
+            <tr><td><code>kafka-ui</code></td><td>8080</td><td>Kafka UI dashboard</td></tr>
+            <tr><td><code>kafka-producer</code></td><td>8083</td><td>Produces Avro messages</td></tr>
+            <tr><td><code>streams</code></td><td>8082</td><td>Kafka Streams processor</td></tr>
+            <tr><td><code>kafka-consumer</code></td><td>8084</td><td>Consumes and processes messages</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="subsection">
       <h3>// Prerequisites</h3>
       <ul class="rules">
-        <li><span class="icon">🐳</span><div>Docker and Docker Compose</div></li>
-        <li><span class="icon">☕</span><div>Java 17</div></li>
-        <li><span class="icon">📦</span><div>Maven</div></li>
+        <li><span class="icon">🐳</span><div><a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">Docker Desktop</a> installed and <strong>running</strong></div></li>
+        <li><span class="icon">🔧</span><div>Git</div></li>
       </ul>
+      <p class="note">No local Java or Maven needed — all Spring Boot apps are built inside Docker using multistage Maven builds.</p>
     </div>
 
     <div class="subsection">
-      <h3>// Start Infrastructure</h3>
-      <pre>docker-compose up -d</pre>
-      <p class="note">Brings up the broker(s), Schema Registry, and any supporting services defined in <code>docker-compose.yml</code>.</p>
+      <h3>// Build &amp; Run</h3>
+      <p class="note"><strong>1. Clone the repository</strong></p>
+      <pre>git clone https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample.git
+cd KafkaSpringBootExample/kafka-docker-compose</pre>
+      <p class="note"><strong>2. Start everything</strong></p>
+      <pre>docker compose up --build</pre>
+      <p class="note">This single command pulls Kafka/Schema Registry/Kafka UI images, builds all three Spring Boot apps inside Docker, starts the 3-broker KRaft cluster, and brings up the producer, streams processor, and consumer in dependency order.</p>
+      <div class="callout">
+        <strong>First run takes 8–15 minutes</strong> — Maven downloads all dependencies into Docker layer cache. Subsequent runs are fast.
+      </div>
+      <p class="note"><strong>3. Verify services are up</strong></p>
+      <pre>docker compose ps</pre>
+      <p class="note">Or open <strong>Kafka UI</strong> at <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a></p>
     </div>
 
     <div class="subsection">
-      <h3>// Test the API</h3>
-      <p class="note">Once the producer app is running, send these requests to publish an <em>AvroUser</em> and an <em>AvroCompany</em> record:</p>
+      <h3>// Startup Order</h3>
+      <p class="note">Services start in a strict dependency chain:</p>
+      <pre>kafka1 + kafka2 + kafka3  (healthy)
+            ↓
+      schema-registry       (healthy)
+            ↓
+      kafka-ui     kafka-producer  (healthy)
+                         ↓
+                   kafka-streams   (started)
+                         ↓
+                   kafka-consumer</pre>
+    </div>
+
+    <div class="subsection">
+      <h3>// Testing with Postman</h3>
+      <p class="note">Import <a href="https://github.com/SuhasPrabhu26VP/KafkaSpringBootExample/blob/main/kafka.json" target="_blank" rel="noopener"><code>kafka.json</code></a> from the root of the repo into Postman to test all producer endpoints. Producer base URL: <code>http://localhost:8083</code></p>
+      <p class="note">Or send requests manually — once the producer app is running, publish an <em>AvroUser</em> and an <em>AvroCompany</em> record:</p>
       <pre><span class="cm">POST http://localhost:8083/api/v1/user</span>
 
 {
@@ -1551,8 +1647,23 @@ userStream
   <span class="str">"updatedAt"</span>: <span class="nu">1717000000000</span>
 }</pre>
       <div class="callout">
-        <strong>Note:</strong> use a matching <code>companyId</code> (e.g. <code>COMP-001</code>) on a user record and a company record if you want to see the Stream-Table and GlobalKTable join examples above actually produce output — joins emit nothing for keys that don't exist on both sides.
+        <strong>Note:</strong> use a matching <code>companyId</code> (e.g. <code>COMP-001</code>) on a user record and a company record if you want to see the Stream-Table and GlobalKTable join examples produce output — joins emit nothing for keys that don't exist on both sides.
       </div>
+    </div>
+
+    <div class="subsection">
+      <h3>// Stopping</h3>
+      <pre><span class="cm"># Stop all containers</span>
+docker compose down
+
+<span class="cm"># Stop and remove all data volumes (clean slate)</span>
+docker compose down -v</pre>
+    </div>
+
+    <div class="subsection">
+      <h3>// Rebuilding a Single Service</h3>
+      <p class="note">If you change code in only one service:</p>
+      <pre>docker compose up --build kafka-producer</pre>
     </div>
   </section>
   </div>
